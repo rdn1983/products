@@ -21,7 +21,7 @@ jobs:
         with:
           project: '${{ github.repository }}'
           path: '.'
-          format: 'HTML,SARIF,JSON'
+          format: 'HTML'
           out: 'reports'
           args: '--enableRetired --failOnCVSS 8'
 
