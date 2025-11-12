@@ -1,0 +1,25 @@
+server:
+  port: 8080
+
+logging:
+  config: classpath:logback.xml
+
+spring:
+  application:
+    name: products
+  main:
+    web-application-type: servlet
+  liquibase:
+    enabled: true
+    change-log: classpath:/db/changelog-master.xml
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:file:./data/db;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;AUTO_SERVER=TRUE
+    username: su
+    password: 111
+
+jwt:
+  secret: mySuperSecretKeyThatIsAtLeast32BytesLong!
+  expiration: 86400000  # 24 hours in milliseconds
+
+

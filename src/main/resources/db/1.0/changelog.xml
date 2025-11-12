@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.7.xsd">
+
+    <changeSet id="create-users-table" author="taisia">
+        <sql>
+            CREATE TABLE users
+            (
+                username VARCHAR(50)  NOT NULL,
+                password VARCHAR(100) NOT NULL,
+                enabled  BOOLEAN      NOT NULL DEFAULT TRUE,
+                PRIMARY KEY (username)
+            );
+
+            CREATE TABLE authorities
+            (
+                username  VARCHAR(50) NOT NULL,
+                authority VARCHAR(50) NOT NULL,
+                FOREIGN KEY (username) REFERENCES users (username)
+            );
+
+            CREATE UNIQUE INDEX ix_auth_username
+                ON authorities (username, authority);
+        </sql>
+    </changeSet>
+
+    <changeSet id="create-products-table" author="taisia">
+        <createTable tableName="products">
+            <column name="ID" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="CREATED_AT" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MODIFIED_AT" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MODIFIED_BY" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="NAME" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="COUNT" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

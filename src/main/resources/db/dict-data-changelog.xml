@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.7.xsd">
+
+    <changeSet id="upload-users" author="taisia" runOnChange="true">
+        <loadUpdateData tableName="USERS" primaryKey="USERNAME" encoding="UTF-8" file="dict-data/USERS.csv" relativeToChangelogFile="true" separator=";"/>
+    </changeSet>
+
+    <changeSet id="upload-authorities" author="taisia" runOnChange="true">
+        <loadUpdateData tableName="AUTHORITIES" primaryKey="USERNAME,AUTHORITY" encoding="UTF-8" file="dict-data/AUTHORITIES.csv" relativeToChangelogFile="true" separator=";"/>
+    </changeSet>
+
+</databaseChangeLog>
