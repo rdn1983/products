@@ -21,15 +21,9 @@ jobs:
         with:
           project: '${{ github.repository }}'
           path: '.'
-          format: 'SARIF'
+          format: 'HTML'
           out: 'reports'
           args: '--enableRetired --failOnCVSS 8'
-
-      - name: Upload SARIF results to GitHub
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: reports/dependency-check-report.sarif
 
       - name: Upload security reports
         uses: actions/upload-artifact@v4
