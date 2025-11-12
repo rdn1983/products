@@ -26,10 +26,7 @@ import javax.sql.DataSource;
 public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtTokenAuthFilter jwtTokenAuthFilter, XssProtectionFilter xssProtectionFilter) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable);
-        
         // Настройка заголовков безопасности для защиты от XSS
-        // Для REST API используем строгую политику безопасности
         http.headers(headers -> headers
                 .contentSecurityPolicy(csp -> csp
                         .policyDirectives("default-src 'self'; script-src 'none'; style-src 'none'; img-src 'none'; font-src 'none'; connect-src 'self'; frame-ancestors 'none'; form-action 'none'; base-uri 'self';")
