@@ -27,7 +27,7 @@ jobs:
         with:
           project: '${{ github.repository }}'
           path: '.'
-          format: 'HTML,SARIF'
+          format: 'SARIF'
           out: 'reports'
           args: >
             --enableRetired
