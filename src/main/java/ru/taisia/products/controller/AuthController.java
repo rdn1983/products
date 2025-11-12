@@ -1,6 +1,6 @@
 package ru.taisia.products.controller;
 
-import lombok.NonNull;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,7 +25,7 @@ public class AuthController {
     private final JwtTokenHelper jwtTokenHelper;
 
     @PostMapping(path = "/login", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public LoginResponseDto login(@NonNull @RequestBody LoginRequestDto request) {
+    public LoginResponseDto login(@Valid @RequestBody LoginRequestDto request) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
         final UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());

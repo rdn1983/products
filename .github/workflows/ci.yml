@@ -7,12 +7,13 @@ on:
     branches: [ main ]
 
 jobs:
-  security-scan:
+  dependency-check:
     name: OWASP Dependency Check
     runs-on: ubuntu-latest
     permissions:
       security-events: write
       contents: read
+      actions: read
 
     steps:
       - name: Checkout repository
@@ -23,12 +24,31 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+          cache: maven
 
       - name: Build Maven project to download dependencies
-        run: mvn compile -DskipTests
+        run: mvn dependency:go-offline -DskipTests
 
-      - name: Run OWASP Dependency Check
+      # Запуск OWASP Dependency Check для анализа зависимостей на уязвимости
+      # Примечание: Для избежания rate limiting добавьте NVD_API_KEY в GitHub Secrets
+      # и используйте параметр --nvdApiKey в args
+      - name: Run OWASP Dependency Check (SARIF)
         uses: dependency-check/Dependency-Check_Action@main
+        id: depcheck-sarif
+        with:
+          project: '${{ github.repository }}'
+          path: '.'
+          format: 'SARIF'
+          out: 'reports'
+          args: >
+            --enableRetired
+            --failOnCVSS 8
+            --scan .
+
+      - name: Run OWASP Dependency Check (HTML)
+        uses: dependency-check/Dependency-Check_Action@main
+        id: depcheck-html
+        if: always()
         with:
           project: '${{ github.repository }}'
           path: '.'
@@ -38,25 +58,50 @@ jobs:
             --enableRetired
             --failOnCVSS 8
             --scan .
-            --suppression **/dependency-check-suppression.xml
 
-      - name: List Maven dependencies (for debugging)
-        run: |
-          echo "Maven files found:"
-          find . -name "pom.xml" -o -name "*.jar"
-          echo "Dependencies directory:"
-          ls -la ~/.m2/repository/ | head -10
-
-      - name: Upload SARIF results to GitHub
+      - name: Upload SARIF to GitHub Security
         uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
           sarif_file: reports/dependency-check-report.sarif
+          wait-for-processing: true
 
       - name: Upload security reports
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: security-reports
+          name: dependency-check-reports
           path: reports/
           retention-days: 30
+
+  static-analysis:
+    name: Static Code Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+      actions: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: java
+
+      - name: Build project
+        run: mvn clean compile -DskipTests
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: '/language:java'

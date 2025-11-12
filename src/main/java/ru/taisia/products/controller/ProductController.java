@@ -1,5 +1,6 @@
 package ru.taisia.products.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +28,7 @@ public class ProductController {
 
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public ProductDto create(ProductDto dto) {
+    public ProductDto create(@Valid @RequestBody ProductDto dto) {
         Product product = productMapper.toModel(dto);
         product = productService.create(product);
         return productMapper.toDto(product);

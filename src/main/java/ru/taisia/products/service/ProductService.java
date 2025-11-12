@@ -27,9 +27,13 @@ public class ProductService {
     public Product create(Product product) {
         validationHelper.validate(product);
 
+        // Устанавливаем ID для новой сущности
+        // Поля аудита (createdBy, creationDate, modifiedBy, modificationDate) 
+        // будут автоматически заполнены Spring Data Auditing при сохранении
         product.setId(UUID.randomUUID());
         product.setNew(true);
 
+        // Spring Data JDBC автоматически заполнит поля аудита через @EnableJdbcAuditing
         return productRepository.save(product);
     }
 }
