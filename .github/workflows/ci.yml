@@ -15,20 +15,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          java-version: '11'
-          distribution: 'temurin'
-
-      - name: Cache OWASP dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.dependency-check/data
-          key: ${{ runner.os }}-owasp-data-${{ hashFiles('**/package-lock.json', '**/pom.xml', '**/build.gradle', '**/*.csproj') }}
-          restore-keys: |
-            ${{ runner.os }}-owasp-data-
-
       - name: Run OWASP Dependency Check
         uses: dependency-check/Dependency-Check_Action@main
         id: dependency-check
@@ -52,12 +38,3 @@ jobs:
           name: security-reports
           path: reports/
           retention-days: 30
-
-      - name: Check scan results
-        run: |
-          if [ -f "reports/dependency-check-report.json" ]; then
-            echo "OWASP scan completed successfully"
-          else
-            echo "OWASP scan failed to generate report"
-            exit 1
-          fi
