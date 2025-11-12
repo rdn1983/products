@@ -10,20 +10,48 @@ jobs:
   security-scan:
     name: OWASP Dependency Check
     runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      - name: Build Maven project to download dependencies
+        run: mvn compile -DskipTests
+
       - name: Run OWASP Dependency Check
         uses: dependency-check/Dependency-Check_Action@main
-        id: dependency-check
         with:
           project: '${{ github.repository }}'
           path: '.'
           format: 'HTML'
           out: 'reports'
-          args: '--enableRetired --failOnCVSS 8'
+          args: >
+            --enableRetired
+            --failOnCVSS 8
+            --scan .
+            --suppression **/dependency-check-suppression.xml
+
+      - name: List Maven dependencies (for debugging)
+        run: |
+          echo "Maven files found:"
+          find . -name "pom.xml" -o -name "*.jar"
+          echo "Dependencies directory:"
+          ls -la ~/.m2/repository/ | head -10
+
+      - name: Upload SARIF results to GitHub
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: reports/dependency-check-report.sarif
 
       - name: Upload security reports
         uses: actions/upload-artifact@v4
