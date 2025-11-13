@@ -26,6 +26,7 @@ import javax.sql.DataSource;
 public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtTokenAuthFilter jwtTokenAuthFilter, XssProtectionFilter xssProtectionFilter) throws Exception {
+        http.csrf(AbstractHttpConfigurer::disable);
         // Настройка заголовков безопасности для защиты от XSS
         http.headers(headers -> headers
                 .contentSecurityPolicy(csp -> csp
