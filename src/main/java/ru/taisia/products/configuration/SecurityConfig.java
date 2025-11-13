@@ -39,6 +39,7 @@ public class SecurityConfig {
         
         http.authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/login").permitAll()
+                        .requestMatchers("/api/csrf-token").permitAll()
                         .requestMatchers("/api/data").authenticated()
                 )
                 .addFilterBefore(xssProtectionFilter, UsernamePasswordAuthenticationFilter.class)
